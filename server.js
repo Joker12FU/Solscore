@@ -1,25 +1,35 @@
-// server.js - CommonJS
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-dotenv.config();
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+import { getWalletData } from "./api/solanaData.js";
 
-const { getWalletData } = require("./api/solanaData.js");
+dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- Simple route test ---
+// --- Setup for serving frontend ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve all files in "public" folder (put your index.html, style.css, script.js there)
+app.use(express.static(path.join(__dirname, "public")));
+
+// Redirect root "/" to index.html
 app.get("/", (req, res) => {
-  res.send("SolScore backend is running 🚀");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // --- Route to fetch wallet score ---
 app.post("/api/score", async (req, res) => {
   try {
     const { walletAddress } = req.body;
-    if (!walletAddress) return res.status(400).json({ error: "Wallet address is required" });
+    if (!walletAddress) {
+      return res.status(400).json({ error: "Wallet address is required" });
+    }
 
     const walletInfo = await getWalletData(walletAddress);
     res.json(walletInfo);
@@ -32,22 +42,23 @@ app.post("/api/score", async (req, res) => {
 // --- Route to compare two wallets ---
 app.post("/api/compare", async (req, res) => {
   try {
-    const { walletA, walletB } = req.body;
-    if (!walletA || !walletB) return res.status(400).json({ error: "Both wallet addresses are required" });
+    const { wallet1, wallet2 } = req.body;
+    if (!wallet1 || !wallet2) {
+      return res.status(400).json({ error: "Both wallet addresses are required" });
+    }
 
-    const [dataA, dataB] = await Promise.all([
-      getWalletData(walletA),
-      getWalletData(walletB)
-    ]);
+    const data1 = await getWalletData(wallet1);
+    const data2 = await getWalletData(wallet2);
 
-    let winner = "tie";
-    if (dataA.score > dataB.score) winner = walletA;
-    else if (dataB.score > dataA.score) winner = walletB;
+    // Determine winner based on score
+    let winner = "Tie";
+    if (data1.score > data2.score) winner = wallet1;
+    else if (data2.score > data1.score) winner = wallet2;
 
-    res.json({ walletA: dataA, walletB: dataB, winner });
+    res.json({ wallet1: data1, wallet2: data2, winner });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch wallet data for comparison" });
+    res.status(500).json({ error: "Failed to compare wallets" });
   }
 });
 

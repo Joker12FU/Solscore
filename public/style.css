@@ -1,0 +1,42 @@
+/* General body */
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin-top: 50px;
+  background: #0d0d0d;
+  color: #fff;
+}
+
+/* Input styling */
+input {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 8px;
+  width: 250px;
+  border: none;
+}
+
+/* Button styling */
+button {
+  padding: 10px 15px;
+  margin: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+}
+
+button:hover {
+  background: #155ab6;
+}
+
+/* Result boxes */
+#result, #compareResult {
+  background: #1a1a1a;
+  padding: 15px;
+  margin: 10px auto;
+  border-radius: 12px;
+  width: 300px;
+  text-align: left;
+}
