@@ -29,7 +29,7 @@
       document.getElementById("result").innerText = "Scanning...";
 
       try {
-        const res = await fetch("http://localhost:5000/api/score", {
+        const res = await fetch("https://solscore.onrender.com/api/score", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ walletAddress: wallet })
@@ -55,7 +55,7 @@
       document.getElementById("compareResult").innerText = "Comparing...";
 
       try {
-        const res = await fetch("http://localhost:5000/api/compare", {
+        const res = await fetch("https://solscore.onrender.com/api/compare", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ walletA, walletB })
